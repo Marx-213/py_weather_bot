@@ -93,7 +93,7 @@ def temp_to_smile(temp: str) -> str:
 
 
 def calculate_right_timezone(timezone: int, sunrise: int) -> int:
-    a = sunrise - timezone
+    a = sunrise - (timezone - CURRENT_SECONDS)
     sunris = dt.datetime.fromtimestamp(a)
     return sunris
 
