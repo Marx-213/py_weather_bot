@@ -1,14 +1,18 @@
 import datetime as dt
 import logging
+import os
 from http import HTTPStatus
 from typing import Any, Literal, Optional
 
 import requests
 import telebot
+from dotenv import load_dotenv
 
-from config import TOKEN, WEATHER_TOKEN
+from config import CODE_TO_SMILE, CURRENT_SECONDS, TEMP_TO_SMILE_DICT
 
-
+load_dotenv()
+TOKEN = os.getenv('TOKEN')
+WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 bot = telebot.TeleBot(TOKEN)
 logging.basicConfig(
     level=logging.INFO,
@@ -16,21 +20,6 @@ logging.basicConfig(
     filemode='w',
     format='%(asctime)s, %(levelname)s, %(message)s, %(name)s'
 )
-current_seconds = 21600
-temp_to_smile_dict = {
-    'Heat': '\U0001F525',
-    'Norm': '\U0001f321',
-    'Cold': '\U00002744',
-}
-code_to_smile = {
-    'Clear': 'Ясно \U00002600',
-    'Clouds': 'Облачно \U00002601',
-    'Rain': 'Дождь \U00002614',
-    'Drizzle': 'Дождь \U00002614',
-    'Thunderstorm': 'Гроза \U0001F329',
-    'Snow': 'Снег \U0001F328',
-    'Mist': 'Туман \U0001F32B'
-}
 
 
 def get_api_answer(city: str,
@@ -71,8 +60,8 @@ def get_weather(response: str) -> Optional[str]:
         right_sunset = calculate_right_timezone(timezone, sunset)
         temp_smile = temp_to_smile(temp)
 
-        if weather_description in code_to_smile:
-            wd = code_to_smile[weather_description]
+        if weather_description in CODE_TO_SMILE:
+            wd = CODE_TO_SMILE[weather_description]
         else:
             wd = ''
 
@@ -92,19 +81,19 @@ def get_weather(response: str) -> Optional[str]:
 
 def temp_to_smile(temp: str) -> str:
     if int(temp) >= 28:
-        temp_smile = temp_to_smile_dict['Heat']
+        temp_smile = TEMP_TO_SMILE_DICT['Heat']
     elif 10 < int(temp) < 28:
-        temp_smile = temp_to_smile_dict['Norm']
+        temp_smile = TEMP_TO_SMILE_DICT['Norm']
     else:
-        temp_smile = temp_to_smile_dict['Cold']
+        temp_smile = TEMP_TO_SMILE_DICT['Cold']
     return temp_smile
 
 
 def calculate_right_timezone(timezone: int, sunrise: int) -> int:
-    if current_seconds <= timezone:
-        a = sunrise - (timezone - current_seconds)
+    if CURRENT_SECONDS <= timezone:
+        a = sunrise - (timezone - CURRENT_SECONDS)
     else:
-        a = sunrise - (current_seconds - timezone)
+        a = sunrise - (CURRENT_SECONDS - timezone)
     sunrise = dt.datetime.fromtimestamp(a)
     return sunrise
 
