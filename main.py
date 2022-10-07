@@ -73,7 +73,6 @@ def get_weather(response: str) -> Optional[str]:
             f'Погода: {weather} \nВлажность: {humidity}% 💧\n'
             f'Ветер: {wind} м/с \nРассвет: {right_sunrise}\n'
             f'Закат: {right_sunset}'
-            f'Время: {dtf}'
         )
         return message_date
 
@@ -94,8 +93,8 @@ def temp_to_smile(temp: str) -> str:
 
 def calculate_right_timezone(timezone: int, sunrise: int) -> int:
     a = sunrise - (timezone - CURRENT_SECONDS)
-    sunris = dt.datetime.fromtimestamp(a)
-    return sunris
+    right_timezone = dt.datetime.fromtimestamp(a)
+    return right_timezone
 
 
 @bot.message_handler(commands=['start'])
