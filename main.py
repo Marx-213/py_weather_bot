@@ -59,8 +59,8 @@ def get_weather(response: str) -> Optional[str]:
         sunset = data['sys']['sunset']
         # right_sunrise = calculate_right_timezone(timezone, sunrise)
         # right_sunset = calculate_right_timezone(timezone, sunset)
-        right_sunrise = dt.datetime.fromtimestamp(sunrise)
-        right_sunset = dt.datetime.fromtimestamp(sunset)
+        right_sunrise = dt.datetime.fromtimestamp(sunrise + CURRENT_SECONDS)
+        right_sunset = dt.datetime.fromtimestamp(sunset + CURRENT_SECONDS)
         temp_smile = temp_to_smile(temp)
 
         if weather_description in CODE_TO_SMILE:
