@@ -47,6 +47,7 @@ def get_weather(response: str) -> Optional[str]:
     '''Принимает json-файл '''
     try:
         data = response
+        logging.info(data)
         city = data['name']
         temp = data['main']['temp']
         humidity = data['main']['humidity']
@@ -57,10 +58,8 @@ def get_weather(response: str) -> Optional[str]:
         timezone = data['timezone']
         sunrise = data['sys']['sunrise']
         sunset = data['sys']['sunset']
-        # right_sunrise = calculate_right_timezone(timezone, sunrise)
-        # right_sunset = calculate_right_timezone(timezone, sunset)
-        right_sunrise = dt.datetime.fromtimestamp(sunrise + CURRENT_SECONDS)
-        right_sunset = dt.datetime.fromtimestamp(sunset + CURRENT_SECONDS)
+        right_sunrise = calculate_right_timezone(timezone, sunrise)
+        right_sunset = calculate_right_timezone(timezone, sunset)
         temp_smile = temp_to_smile(temp)
 
         if weather_description in CODE_TO_SMILE:
