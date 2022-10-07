@@ -9,12 +9,11 @@ import requests
 import telebot
 from dotenv import load_dotenv
 
-from config import CODE_TO_SMILE, TEMP_TO_SMILE_DICT
+from config import CODE_TO_SMILE, CURRENT_SECONDS, TEMP_TO_SMILE_DICT
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
-CURRENT_SECONDS = 21600
 bot = telebot.TeleBot(TOKEN)
 logging.basicConfig(
     level=logging.INFO,
