@@ -60,6 +60,7 @@ def get_weather(response: str) -> Optional[str]:
         right_sunrise = calculate_right_timezone(timezone, sunrise)
         right_sunset = calculate_right_timezone(timezone, sunset)
         temp_smile = temp_to_smile(temp)
+        dtf = dt.datetime.now()
 
         if weather_description in CODE_TO_SMILE:
             wd = CODE_TO_SMILE[weather_description]
@@ -72,6 +73,7 @@ def get_weather(response: str) -> Optional[str]:
             f'Погода: {weather} \nВлажность: {humidity}% 💧\n'
             f'Ветер: {wind} м/с \nРассвет: {right_sunrise}\n'
             f'Закат: {right_sunset}'
+            f'Время: {dtf}'
         )
         return message_date
 
