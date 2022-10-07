@@ -70,8 +70,8 @@ def get_weather(response: str) -> Optional[str]:
             f'Город: {city}, {wd}\nТемпература: {temp} C° {temp_smile}\n'
             f'Ощущается как {feels_like} C°{temp_smile}\n'
             f'Погода: {weather} \nВлажность: {humidity}% 💧\n'
-            f'Ветер: {wind} м/с \nРассвет: {right_sunrise}\n'
-            f'Закат: {right_sunset}'
+            f'Ветер: {wind} м/с \nРассвет: {sunrise}\n'
+            f'Закат: {sunset}'
         )
         return message_date
 
