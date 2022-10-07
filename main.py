@@ -47,7 +47,6 @@ def get_weather(response: str) -> Optional[str]:
     '''Принимает json-файл '''
     try:
         data = response
-        logging.info(data)
         city = data['name']
         temp = data['main']['temp']
         humidity = data['main']['humidity']
