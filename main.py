@@ -57,8 +57,10 @@ def get_weather(response: str) -> Optional[str]:
         timezone = data['timezone']
         sunrise = data['sys']['sunrise']
         sunset = data['sys']['sunset']
-        right_sunrise = calculate_right_timezone(timezone, sunrise)
-        right_sunset = calculate_right_timezone(timezone, sunset)
+        # right_sunrise = calculate_right_timezone(timezone, sunrise)
+        # right_sunset = calculate_right_timezone(timezone, sunset)
+        right_sunrise = dt.datetime.fromtimestamp(sunrise)
+        right_sunset = dt.datetime.fromtimestamp(sunset)
         temp_smile = temp_to_smile(temp)
 
         if weather_description in CODE_TO_SMILE:
@@ -70,8 +72,8 @@ def get_weather(response: str) -> Optional[str]:
             f'Город: {city}, {wd}\nТемпература: {temp} C° {temp_smile}\n'
             f'Ощущается как {feels_like} C°{temp_smile}\n'
             f'Погода: {weather} \nВлажность: {humidity}% 💧\n'
-            f'Ветер: {wind} м/с \nРассвет: {sunrise}\n'
-            f'Закат: {sunset}'
+            f'Ветер: {wind} м/с \nРассвет: {right_sunrise}\n'
+            f'Закат: {right_sunset}'
         )
         return message_date
 
