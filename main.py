@@ -9,11 +9,12 @@ import requests
 import telebot
 from dotenv import load_dotenv
 
-from config import CODE_TO_SMILE, CURRENT_SECONDS, TEMP_TO_SMILE_DICT
+from config import CODE_TO_SMILE, TEMP_TO_SMILE_DICT
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
+CURRENT_SECONDS = 21600
 bot = telebot.TeleBot(TOKEN)
 logging.basicConfig(
     level=logging.INFO,
@@ -91,7 +92,7 @@ def temp_to_smile(temp: str) -> str:
 
 
 def calculate_right_timezone(timezone: int, sunrise: int) -> int:
-    if CURRENT_SECONDS >= timezone:
+    if CURRENT_SECONDS <= timezone:
         a = sunrise - (timezone - CURRENT_SECONDS)
     else:
         a = sunrise - (CURRENT_SECONDS - timezone)
