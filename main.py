@@ -3,7 +3,7 @@ import logging
 import os
 from http import HTTPStatus
 from typing import Any, Literal, Optional
-
+import time
 import requests
 import telebot
 from dotenv import load_dotenv
@@ -119,7 +119,16 @@ def send_message(message: Any) -> None:
 
 
 def main() -> None:
-    bot.polling()
+    while True:
+        try:
+            logging.info("Bot running..")
+            bot.polling(none_stop=True, interval=2)
+            break
+        except telebot.apihelper.ApiException as e:
+            logging.error(e)
+            bot.stop_polling()
+            time.sleep(15)
+            logging.info("Running again!")
 
 
 if __name__ == '__main__':
