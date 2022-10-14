@@ -95,7 +95,7 @@ def calculate_right_timezone(timezone: int, sunrise: int) -> int:
     if CURRENT_SECONDS <= timezone:
         a = sunrise + (timezone - CURRENT_SECONDS)
     else:
-        a = sunrise + (CURRENT_SECONDS - timezone)
+        a = sunrise + (timezone - CURRENT_SECONDS)
     sunrise = dt.datetime.fromtimestamp(a)
     return sunrise
 
