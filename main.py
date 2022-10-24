@@ -52,7 +52,7 @@ def start(message: Any) -> None:
 
 
 @bot.message_handler(commands=['allusers'])
-def send_message_to_all_users() -> None:
+def send_message_to_all_users(message: Any) -> None:
     all_users = select_all_users_id()
     for i in range(len(all_users)):
         bot.send_message(all_users[i][0], all_users[i][0])
