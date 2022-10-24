@@ -55,7 +55,14 @@ def start(message: Any) -> None:
 def send_message_to_all_users(message: Any) -> None:
     all_users = select_all_users_id()
     for i in range(len(all_users)):
-        bot.send_message(all_users[i][0], all_users[i][0])
+        bot.send_message(
+            all_users[i][0],
+            (
+                'Приветствую, человек!✋🏼\n Если тебе пришло  это сообщение, '
+                'то это значит, что ты когда-то использовал этого бота\n'
+                'У меня появились новые функции, так что советую попробовать'
+            )
+        )
 
 
 def back_main_menu(message: Any) -> None:
