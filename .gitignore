@@ -3,3 +3,5 @@ venv/
 main.log
 __pycache__/
 .vscode/
+newfile
+test

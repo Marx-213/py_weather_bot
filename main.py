@@ -1,122 +1,191 @@
-import datetime as dt
 import logging
-import os
 import time
-from http import HTTPStatus
-from typing import Any, Literal, Optional
-
-import requests
+from typing import Any
 import telebot
 from dotenv import load_dotenv
+from telebot import types
+from db_funcs import db_user_save, select_all_users_id
+from weather_tomorrow import get_api_tomorrow, get_tomorrow_weather
+from current_weather import get_api_answer, get_location, get_weather
+from five_days_weather import get_api_five_days, get_five_days_weather
+import os
 
-from config import CODE_TO_SMILE, CURRENT_SECONDS, TEMP_TO_SMILE_DICT
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 bot = telebot.TeleBot(TOKEN)
+WEATHER_TOKEN = WEATHER_TOKEN
+bot = telebot.TeleBot(TOKEN)
 logging.basicConfig(
     level=logging.INFO,
     filename='main.log',
-    filemode='w',
+    filemode='a',
     format='%(asctime)s, %(levelname)s, %(message)s, %(name)s'
 )
 
 
-def get_api_answer(city: str,
-                   WEATHER_TOKEN: str
-                   ) -> dict[str, str] | Literal[400]:
-    """Делает запрос к URL, возвращает json-файл."""
-    response = requests.get(
-        f'https://api.openweathermap.org/data/2.5/'
-        f'weather?q={city}&appid={WEATHER_TOKEN}&units=metric&lang=ru'
-    )
-    if response.status_code != HTTPStatus.OK:
-        logging.error(f'Сайт не доступен, код ответа {response.status_code}')
-        return 400
-    try:
-        response = response.json()
-        logging.info(f'Получен ответ: {response}')
-        return response
-    except Exception as error:
-        logging.error(f'Произошла ошибка: {error}')
-        raise Exception(f'Произошла ошибка: {error}')
-
-
-def get_weather(response: str) -> Optional[str]:
-    '''Принимает json-файл '''
-    try:
-        data = response
-        city = data['name']
-        temp = data['main']['temp']
-        humidity = data['main']['humidity']
-        feels_like = data['main']['feels_like']
-        wind = data['wind']['speed']
-        weather = data['weather'][0]['description']
-        weather_description = data['weather'][0]['main']
-        timezone = data['timezone']
-        sunrise = data['sys']['sunrise']
-        sunset = data['sys']['sunset']
-        right_sunrise = calculate_right_timezone(timezone, sunrise)
-        right_sunset = calculate_right_timezone(timezone, sunset)
-        temp_smile = temp_to_smile(temp)
-
-        if weather_description in CODE_TO_SMILE:
-            wd = CODE_TO_SMILE[weather_description]
-        else:
-            wd = ''
-
-        message_date = (
-            f'Город: {city}, {wd}\nТемпература: {temp} C° {temp_smile}\n'
-            f'Ощущается как {feels_like} C°{temp_smile}\n'
-            f'Погода: {weather} \nВлажность: {humidity}% 💧\n'
-            f'Ветер: {wind} м/с \nРассвет: {right_sunrise}\n'
-            f'Закат: {right_sunset}'
-        )
-        return message_date
-
-    except Exception as error:
-        logging.error(f'Произошла ошибка: {error}')
-        print(f'Проверьте название города. Ошибка: {error}')
-
-
-def temp_to_smile(temp: str) -> str:
-    if int(temp) >= 28:
-        temp_smile = TEMP_TO_SMILE_DICT['Heat']
-    elif 10 < int(temp) < 28:
-        temp_smile = TEMP_TO_SMILE_DICT['Norm']
-    else:
-        temp_smile = TEMP_TO_SMILE_DICT['Cold']
-    return temp_smile
-
-
-def calculate_right_timezone(timezone: int, sunrise: int) -> int:
-    if CURRENT_SECONDS <= timezone:
-        a = sunrise - (timezone - CURRENT_SECONDS)
-    else:
-        a = sunrise - (CURRENT_SECONDS - timezone)
-    sunrise = dt.datetime.fromtimestamp(a)
-    return sunrise
-
-
 @bot.message_handler(commands=['start'])
 def start(message: Any) -> None:
+    # markup = types.InlineKeyboardMarkup(row_width=2)
+    # item = types.InlineKeyboardButton(
+    # 'Погода на завтра',
+    # callback_data='weather_tomorrow')
+    # item2 = types.InlineKeyboardButton(
+    # 'Погода на на 3 дня',
+    # callback_data='weather_5_days')
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn1 = types.KeyboardButton('Погода на завтра')
+    btn2 = types.KeyboardButton('Погода на 3 дня')
+    markup.add(btn1, btn2)
+    db_user_save(message.chat.id)
+    # markup.add(item, item2)
     bot.send_message(
         message.chat.id,
-        'Система включена, человек.\nВведите город:'
+        (
+            'Я погодный бот! ☀️⛅️🌧❄️\n'
+            'Введите город, чтобы получить погоду на сегодня '
+            'или выберите другой вариант'
+        ),
+        reply_markup=markup
     )
+
+
+@bot.message_handler(commands=['allusers'])
+def send_message_to_all_users() -> None:
+    all_users = select_all_users_id()
+    for i in range(len(all_users)):
+        bot.send_message(all_users[i][0], all_users[i][0])
+
+
+def back_main_menu(message: Any) -> None:
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn1 = types.KeyboardButton('Погода на завтра')
+    btn2 = types.KeyboardButton('Погода на 3 дня')
+    markup.add(btn1, btn2)
+    msg = bot.send_message(
+        message.chat.id,
+        ('Вы в главном меню, просто напишите название '
+         'города или нажмите на одну из кнопок'),
+        reply_markup=markup
+    )
+    bot.register_next_step_handler(msg, send_message)
+
+
+def tmrrw_weather(message: Any) -> None:
+    if message.text == '<<< Назад':
+        back_main_menu(message)
+    elif message.text == 'Погода на 3 дня':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('<<< Назад')
+        btn2 = types.KeyboardButton('Погода на завтра')
+        markup.add(btn1, btn2)
+        msg = bot.send_message(
+            message.chat.id,
+            'Ок, введите город, чтобы получить погоду на ближайшие 3 дня',
+            reply_markup=markup
+        )
+        bot.register_next_step_handler(msg, five_days_weather)
+    else:
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('<<< Назад')
+        btn2 = types.KeyboardButton('Погода на 3 дня')
+        markup.add(btn1, btn2)
+        response = get_api_tomorrow(message.text, WEATHER_TOKEN)
+        if response == 400:
+            msg = bot.send_message(
+                message.chat.id,
+                'Город не найден, попробуйте еще',
+                reply_markup=markup
+            )
+            bot.register_next_step_handler(msg, tmrrw_weather)
+        weather = get_tomorrow_weather(response)
+        msg = bot.send_message(
+            message.chat.id,
+            weather,
+            reply_markup=markup
+        )
+        bot.register_next_step_handler(msg, tmrrw_weather)
+
+
+def five_days_weather(message: Any) -> None:
+    if message.text == '<<< Назад':
+        back_main_menu(message)
+    elif message.text == 'Погода на завтра':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('<<< Назад')
+        btn2 = types.KeyboardButton('Погода на 3 дня')
+        markup.add(btn1, btn2)
+        msg = bot.send_message(
+            message.chat.id,
+            'Ок, введите город, чтобы получить погоду на завтра',
+            reply_markup=markup
+        )
+        bot.register_next_step_handler(msg, tmrrw_weather)
+    else:
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('<<< Назад')
+        btn2 = types.KeyboardButton('Погода на завтра')
+        markup.add(btn1, btn2)
+        response = get_api_five_days(message.text, WEATHER_TOKEN)
+        if response == 400:
+            msg = bot.send_message(
+                message.chat.id,
+                'Город не найден, попробуйте еще',
+                reply_markup=markup
+            )
+            bot.register_next_step_handler(msg, five_days_weather)
+        weather = get_five_days_weather(response)
+        msg = bot.send_message(
+            message.chat.id,
+            weather,
+            reply_markup=markup
+        )
+        bot.register_next_step_handler(msg, five_days_weather)
 
 
 @bot.message_handler(content_types='text')
 def send_message(message: Any) -> None:
-    response = get_api_answer(message.text, WEATHER_TOKEN)
-    if response == 400:
-        bot.send_message(
+    if message.text == 'Погода на завтра':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('<<< Назад')
+        btn2 = types.KeyboardButton('Погода на 3 дня')
+        markup.add(btn1, btn2)
+        msg = bot.send_message(
             message.chat.id,
-            'Город не найден, попробуйте еще раз'
+            'Ок, введите город, чтобы получить погоду на завтра',
+            reply_markup=markup
         )
-    weather = get_weather(response)
-    bot.send_message(message.chat.id, weather)
+        bot.register_next_step_handler(msg, tmrrw_weather)
+    elif message.text == 'Погода на 3 дня':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('<<< Назад')
+        btn2 = types.KeyboardButton('Погода на 3 дня')
+        markup.add(btn1, btn2)
+        msg = bot.send_message(
+            message.chat.id,
+            'Ок, введите город, чтобы получить погоду на ближайшие 3 дня',
+            reply_markup=markup
+        )
+        bot.register_next_step_handler(msg, five_days_weather)
+    else:
+        response = get_api_answer(message.text, WEATHER_TOKEN)
+        if response == 400:
+            bot.send_message(
+                message.chat.id,
+                'Город не найден, попробуйте еще раз'
+            )
+        lon, lat = get_location(response)
+        weather = get_weather(response)
+        bot.send_message(message.chat.id, weather)
+        bot.send_location(message.chat.id, lon, lat)
+# @bot.callback_query_handler(func=lambda call:True)
+# def callback(call):
+#     if call.message:
+#         if call.data == 'weather_tomorrow':
+#             bot.send_message(call.message.chat.id, 'пкhhtrh')
+#         if call.data == 'weather_5_days':
+#             bot.send_message(call.message.chat.id, 'пкпуп')
 
 
 def main() -> None:
