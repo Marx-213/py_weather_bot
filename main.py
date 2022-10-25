@@ -58,7 +58,7 @@ def send_message_to_all_users(message: Any) -> None:
         bot.send_message(
             all_users[i][0],
             (
-                f'Приветствую, {message.from_user.id}]\n {message.from_user.first_name}}!✋🏼'
+                f'Приветствую, {message.from_user.id}]\n {message.from_user.first_name}!✋🏼'
                 f'{message.from_user.last_name} {message.from_user.username}'
                 'Если тебе пришло  это сообщение,'
                 ' то это значит, что ты когда-то использовал этого бота\n'
