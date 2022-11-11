@@ -4,20 +4,17 @@ from typing import Any
 import telebot
 from dotenv import load_dotenv
 from telebot import types
-from config import TOKEN2, WEATHER_TOKEN
 from db_funcs import db_user_save, select_all_users_id
 from weather_tomorrow import get_api_tomorrow, get_tomorrow_weather
 from current_weather import get_api_answer, get_location, get_weather
 from three_days_weather import get_api_three_days, get_three_days_weather
-# import os
+import os
 
 
 load_dotenv()
-# TOKEN = os.getenv('TOKEN')
-# WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
-TOKEN = TOKEN2
+TOKEN = os.getenv('TOKEN')
+WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 bot = telebot.TeleBot(TOKEN)
-WEATHER_TOKEN = WEATHER_TOKEN
 bot = telebot.TeleBot(TOKEN)
 logging.basicConfig(
     level=logging.INFO,
@@ -48,7 +45,7 @@ def start(message: Any) -> None:
     bot.send_message(
         message.chat.id,
         (
-            'Я погодный бот! ☀️⛅️🌧❄️\n'
+            'Я - погодный бот! ☀️⛅️🌧❄️\n'
             'Введите город, чтобы получить погоду на сегодня '
             'или выберите другой вариант'
         ),
@@ -68,7 +65,7 @@ def send_message_to_all_users(message: Any) -> None:
                 'Приветствую, человек!✋🏼\n'
                 'Если тебе пришло  это сообщение,'
                 ' то это значит, что ты когда-то использовал этого бота\n'
-                'У меня появились новые функции'
+                'У меня появились новые функции, протестируй их'
             )
         )
 
