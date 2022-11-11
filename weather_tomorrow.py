@@ -9,7 +9,7 @@ def get_api_tomorrow(
             city: str,
             WEATHER_TOKEN: str
         ) -> dict[str, str] | Literal[400]:
-    """Делает запрос к URL, возвращает json-файл."""
+    '''Делает запрос к URL, возвращает json-файл.'''
     url = (
         f'https://api.openweathermap.org/data/2.5/forecast?'
         f'q={city}&appid={WEATHER_TOKEN}&units=metric&lang=ru'

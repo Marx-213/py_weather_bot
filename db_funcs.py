@@ -11,6 +11,9 @@ logging.basicConfig(
 
 
 def db_user_save(message: Any) -> None:
+    '''Сохраняет id юзера в базу данных при первом запуске бота
+    командой /start.
+    '''
     connect = sqlite3.connect('users.db')
     cursor = connect.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS users (id INTEGER)''')
@@ -26,6 +29,7 @@ def db_user_save(message: Any) -> None:
 
 
 def select_all_users_id() -> List[Tuple[str]]:
+    '''Выбирает все id, которые хранятся в БД и возвращает их'''
     id_list = []
     connect = sqlite3.connect('users.db')
     cursor = connect.cursor()

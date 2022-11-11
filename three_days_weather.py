@@ -5,7 +5,7 @@ import logging
 from calculating_funcs import temp_to_smile, calculate_right_timezone
 
 
-def get_api_five_days(
+def get_api_three_days(
             city: str,
             WEATHER_TOKEN: str
         ) -> dict[str, str] | Literal[400]:
@@ -27,7 +27,7 @@ def get_api_five_days(
         raise Exception(f'Произошла ошибка: {error}')
 
 
-def get_five_days_weather(data: str) -> Optional[str]:
+def get_three_days_weather(data: str) -> Optional[str]:
     '''Принимает json-файл '''
     try:
         city = data['city']['name']

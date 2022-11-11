@@ -9,7 +9,7 @@ from calculating_funcs import temp_to_smile, calculate_right_timezone
 def get_api_answer(city: str,
                    WEATHER_TOKEN: str
                    ) -> dict[str, str] | Literal[400]:
-    """Делает запрос к URL, возвращает json-файл."""
+    '''Делает запрос к URL, возвращает json-файл.'''
     response = requests.get(
         f'https://api.openweathermap.org/data/2.5/'
         f'weather?q={city}&appid={WEATHER_TOKEN}&units=metric&lang=ru'
@@ -27,7 +27,7 @@ def get_api_answer(city: str,
 
 
 def get_weather(response: str) -> Optional[str]:
-    '''Принимает json-файл '''
+    '''Принимает json-файл.'''
     try:
         data = response
         city = data['name']
