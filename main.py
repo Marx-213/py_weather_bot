@@ -198,7 +198,7 @@ def send_message(message: Any) -> None:
         lon, lat = get_location(response)
         weather = get_weather(response)
         bot.send_message(message.chat.id, weather)
-        bot.send_location(message.chat.id, lon, lat)
+        bot.send_location(message.chat.id, lat, lon)
 # @bot.callback_query_handler(func=lambda call:True)
 # def callback(call):
 #     if call.message:
