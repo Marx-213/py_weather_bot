@@ -2,6 +2,7 @@
 ### Описание
 Погодный бот для социальной сети Telegram
 При нажатии команды /start бот сохраняет id юзера в БД с помошью sqlite3.
+
 Бот имеет несколько хэндлеров а также кнопок с командами:
 - Погода на сегодня
 - Погода на завтра
@@ -25,3 +26,8 @@ source env/bin/activate
 python3 -m pip install --upgrade pip
 pip install -r requirements.txt
 ``` 
+
+### Технологии
+- Python
+- pyTelegramBotAPI
+- sqlite3
