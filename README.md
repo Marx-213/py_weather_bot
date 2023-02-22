@@ -1,4 +1,7 @@
 # py_weather_bot
+
+![Python](https://img.shields.io/badge/Python-14354C?style=for-the-badge&logo=python&logoColor=white)![React](https://img.shields.io/badge/pytelegrambotapi-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)![](https://img.shields.io/badge/SQLite-%23092E20?style=for-the-badge&logo=sqlite&logoColor=white)
+
 ### Описание
 Погодный бот для социальной сети Telegram
 При нажатии команды /start бот сохраняет id юзера в БД с помошью sqlite3.
