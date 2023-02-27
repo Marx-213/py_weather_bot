@@ -8,4 +8,4 @@ test
 .vs
 vs/
 .env
-.users.db
+users.db
