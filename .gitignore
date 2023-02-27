@@ -1,6 +1,7 @@
 .venv
 venv/
-main.log
+*.log
+*.db
 __pycache__/
 .vscode/
 newfile
@@ -8,4 +9,3 @@ test
 .vs
 vs/
 .env
-users.db
