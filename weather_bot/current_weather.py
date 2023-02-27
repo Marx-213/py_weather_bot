@@ -1,4 +1,4 @@
-from typing import Any, Literal, Optional, Tuple
+from typing import Any, Optional, Tuple
 import requests
 from http import HTTPStatus
 import logging
@@ -6,9 +6,7 @@ from config import CODE_TO_SMILE
 from calculating_funcs import temp_to_smile, calculate_right_timezone
 
 
-def get_api_answer(city: str,
-                   WEATHER_TOKEN: str
-                   ) -> dict[str, str] | Literal[400]:
+def get_api_answer(city: str, WEATHER_TOKEN: str):
     '''Делает запрос к URL, возвращает json-файл.'''
     response = requests.get(
         f'https://api.openweathermap.org/data/2.5/'

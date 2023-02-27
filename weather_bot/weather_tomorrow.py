@@ -1,14 +1,11 @@
-from typing import Literal, Optional
+from typing import Optional
 import requests
 from http import HTTPStatus
 import logging
 from calculating_funcs import temp_to_smile, calculate_right_timezone
 
 
-def get_api_tomorrow(
-        city: str,
-        WEATHER_TOKEN: str)
-        ) -> dict[str, str] | Literal[400]:
+def get_api_tomorrow(city: str,WEATHER_TOKEN: str):
     '''Делает запрос к URL, возвращает json-файл.'''
     url = (
         f'https://api.openweathermap.org/data/2.5/forecast?'

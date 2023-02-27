@@ -15,7 +15,6 @@ load_dotenv()
 TOKEN = os.getenv('TOKEN')
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 bot = telebot.TeleBot(TOKEN)
-bot = telebot.TeleBot(TOKEN)
 logging.basicConfig(
     level=logging.INFO,
     filename='main.log',
